@@ -32,7 +32,7 @@ jobs:
             sshpass -p "t*zRKXck6w$4" ssh -o StrictHostKeyChecking=no root@103.68.40.157 \
             "echo checkout to directory && \
             sudo su && \
-            cd /var/www/html/CityXRayAdminAPI && \
+            cd /var/www/html/KaiveeAdminAPI && \
             echo TAKE A LATEST PULL && \
             git checkout main --force && \
             echo checkout to main successfully! && \
