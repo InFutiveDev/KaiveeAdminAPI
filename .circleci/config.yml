@@ -1,0 +1,53 @@
+# Javascript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
+version: 2
+jobs:
+  deployMaster:
+    docker:
+      - image: circleci/node:12.0.0
+    working_directory: ~/repo
+    steps:
+      - checkout
+      # remove node_modules
+      - run: rm -rf node_modules
+      # install sshpass
+      - run:
+          name: install sshpass
+          command: |
+            sudo apt-get install sshpass
+      # changing perssion
+      #- run: chmod +x ./.circleci/deployDev.sh
+      # deploy and start server
+      #- run: ./.circleci/deployDev.sh
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+      - run:
+          name: Code deploy
+          command: |
+            #Run script inside of machine
+            #ssh -o StrictHostKeyChecking=no root@103.30.72.26 \
+            sshpass -p "SAsp9dmdcUHGSag" ssh -o StrictHostKeyChecking=no root@103.168.173.148 \
+            "echo checkout to directory && \
+            sudo su && \
+            cd /var/www/html/CityXRayAdminAPI && \
+            echo TAKE A LATEST PULL && \
+            git checkout main --force && \
+            echo checkout to main successfully! && \
+            sudo git pull --force && \
+            sudo npm i && \
+            echo Restarting the node-server && \
+            pm2 start ecosystem.config.js && \
+            echo ..............DEPLOYMENT-DONE................."
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - deployMaster:
+          # requires:
+          #   - test
+          filters:
+            branches:
+              only: main
