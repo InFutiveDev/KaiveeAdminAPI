@@ -35,12 +35,12 @@ mongoose.connection.on("disconnected", function () {
 });
 
 // Body-parser
-app.use(cors({origin: '*'}));
+app.use(cors({ origin: '*' }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use("/v1", routes);
 app.get("/", (req, res) => {
-  res.send("Wel-Come to City Imaging Admin");
+  res.send("Wel-Come to kaivee Admin");
 });
 
 app.listen(PORT, () => {
