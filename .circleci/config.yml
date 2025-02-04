@@ -28,7 +28,7 @@ jobs:
           name: Code deploy
           command: |
             #Run script inside of machine
-            #ssh -o StrictHostKeyChecking=no root@103.30.72.26 \
+            
             sshpass -p "t*zRKXck6w$4" ssh -o StrictHostKeyChecking=no root@103.68.40.157 \
             "echo checkout to directory && \
             sudo su && \
