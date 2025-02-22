@@ -14,7 +14,7 @@ const testUpdate = () => {
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: 'http://122.176.75.191/CityLab/Design/Lab/Services/MobileAppInfo.asmx/ItemMaster_RateType?AccessToken=563d4b4f086a62c099023abd84cfb1f9&RateTypeID=78',
+          //  url: 'http://122.176.75.191/CityLab/Design/Lab/Services/MobileAppInfo.asmx/ItemMaster_RateType?AccessToken=563d4b4f086a62c099023abd84cfb1f9&RateTypeID=78',
             headers: {}
         };
 
