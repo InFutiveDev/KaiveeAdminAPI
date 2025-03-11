@@ -9,5 +9,8 @@ initializeApp({
 });
 
 const bucket = getStorage().bucket("gs://kaivee.firebasestorage.app");
+
+// console.log("Firebase bucket name:", bucket.name);
+
 // };
 module.exports = { bucket };

@@ -16,12 +16,12 @@ mongoose.connect(DATABASE_URL, {
   socketTimeoutMS: 0,
   keepAlive: true,
 }); // connect to DATABASE_URL
-console.log("MongoDb Connection: ", DATABASE_URL);
+//console.log("MongoDb Connection: ", DATABASE_URL);
 
 // CONNECTION EVENTS
 // When successfully connected
 mongoose.connection.on("connected", function () {
-  console.log("Mongoose default connection open to " + DATABASE_URL);
+  console.log("Mongoose default connection open to Database");
 });
 
 // If the connection throws an error

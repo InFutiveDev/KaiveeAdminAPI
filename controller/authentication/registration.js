@@ -16,74 +16,74 @@ const registerWithEmailAndPassword = async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
+        // Validate input
         const { error } = SignupValidation.registerWithEmailAndPassword({ name, email, password });
-        if (error) {
-            const obj = {
+        if (error && error.details.length > 0) {
+            return Response.error({
                 res,
                 status: Constant.STATUS_CODE.BAD_REQUEST,
                 msg: error.details[0].message,
-            };
-            return Response.error(obj);
+            });
         }
 
+        // Check if user already exists
         const userInfo = await User.findOne({ 'email.id': email });
         if (userInfo) {
-            const resp = {
+            return Response.error({
+                res,
                 status: Constant.STATUS_CODE.BAD_REQUEST,
                 msg: Constant.ERROR_MSGS.ACCOUNT_EXISTS,
-            };
-            throw (resp);
+            });
         }
 
-        // Encrypt password By Bcrypt
-        const passwordHash = bcrypt.hashSync(password, 10);
-        // const passwordHash = passwordHash;
+        // Hash password (using async)
+        const passwordHash = await bcrypt.hash(password, 10);
 
+        // Generate Email Verification Token
+        const token = require('crypto').randomBytes(16).toString('hex');
 
-        // Email Token Verification
-        const token = randomString({
-            length: 15,
-            type: 'url-safe',
-        });
-
-
-
-
-
-        // Create User Document in Mongodb
-        const { _id } = await User.create({
-            name,
-            email: {
-                id: email,
-                verified: false,
-                registrationType: 'Email',
-                password: passwordHash,
-                token: {
-                    token,
-                    createdAt: Date.now(),
+        // Create User Document in MongoDB
+        let newUser;
+        try {
+            newUser = await User.create({
+                name,
+                email: {
+                    id: email,
+                    verified: false,
+                    registrationType: 'Email',
+                    password: passwordHash,
+                    token: {
+                        token,
+                        createdAt: Date.now(),
+                    },
                 },
-            },
-        });
+            });
+        } catch (err) {
+            return Response.error({
+                res,
+                status: Constant.STATUS_CODE.SERVER_ERROR,
+                msg: "Error creating user",
+            });
+        }
+
         // Send Response To Client
-        const obj = {
+        return Response.success({
             res,
             status: Constant.STATUS_CODE.CREATED,
             msg: Constant.INFO_MSGS.VERIFICATION_EMAIL,
             data: {
-                _id,
+                _id: newUser._id,
                 name,
                 email,
-
-                // token,
-                // passwordHash
             },
-        };
-        return Response.success(obj);
+        });
+
     } catch (error) {
-        console.log('error--->', error)
+        console.log('Error --->', error);
         return handleException(logger, res, error);
     }
 };
+
 
 /**
  * Customer Email id verification
