@@ -14,25 +14,9 @@ const { async } = require("crypto-random-string");
 const addTest = async (req, res) => {
   const { logger } = req;
 
-  // console.log(req);
+  // console.log('req--->',req.data);
   try {
-    //  updateCategory.home_image = mediaLinkhome;
-
-    //  const homeImage = req.files.package_image.filepath;
-    // // firebase logic to upload the image
-    //   let uploadedhome = bucket.upload(homeImage, {
-    //     public: true,
-    //     destination: `images/${
-    //       Math.random() * 10000 + req.files.package_image.originalFilename
-    //     }`,
-    // // destination:image.filename,
-    //     metadata: {
-    //       firebaseStorageDownloadTokens: uuidv4(),
-    //     },
-    //   });
-    //   let datahome = await uploadedhome;
-
-    //  const mediaLink =req.files ? datahome[0].metadata.mediaLink : null;
+   
     const images = {
       packageImage: req.files.package_image
         ? req.files.package_image.filepath
@@ -58,7 +42,7 @@ const addTest = async (req, res) => {
     );
 
     const uploadedImagesData = await Promise.all(imageUploadPromises);
-
+  
     const mediaLinkPackageImage = uploadedImagesData[0]
       ? uploadedImagesData[0][0].metadata.mediaLink
       : null;
