@@ -28,6 +28,10 @@ const inquirySchema = new Schema(
       default: null,
       trim:true,
     },
+    appointment_date: {
+      type: String,
+      default: null,     
+    },
     otp:{
       type:Number,
       default:null,
