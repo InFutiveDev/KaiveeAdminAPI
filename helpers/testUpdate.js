@@ -94,31 +94,42 @@ const testUpdate = () => {
                                 { upsert: true }
                             );
                         }
-                        // else{
-                        //     const document = {
-                        //         itdose_code: jsonData[i].ItemID,
-                        //         itdose_test_name: jsonData[i].TestName,
-                        //         itdose_offer_price: jsonData[i].Rate,
-                        //         itdose_department: jsonData[i].DepartmentName,
+                        else{
+                            const document = {
+                                itdose_code: jsonData[i].ItemID,
+                                itdose_test_name: jsonData[i].TestName,
+                                itdose_offer_price: jsonData[i].Rate,
+                                itdose_department: jsonData[i].DepartmentName,
 
-                        //         code: jsonData[i].ItemID,
-                        //         test_name: jsonData[i].TestName,
-                        //         mrp: jsonData[i].Rate,
-                        //         offer_price: jsonData[i].Rate,
-                        //         department: jsonData[i].DepartmentName,
+                                code: jsonData[i].ItemID,
+                                test_name: jsonData[i].TestName,
+                                mrp: jsonData[i].Rate,
+                                offer_price: jsonData[i].Rate,
+                                department: jsonData[i].DepartmentName,
 
-                        //         test_url: finalURL.toLowerCase(),
-                        //         meta_title: jsonData[i].TestName,
-                        //         meta_desc: jsonData[i].TestName,
-                        //         meta_keyword: jsonData[i].TestName,
-                        //         search_tag: jsonData[i].TestName,
-                        //         test_pre_test_info: jsonData[i].TestName,
-                        //         specialityName: jsonData[i].TestName,
-                        //         test_components: jsonData[i].TestName,
-                        //         package_type: 'lab-test'
-                        //     };
-                        //     await testModel.insertOne(document);
-                        // }
+                                test_url: finalURL.toLowerCase(),
+                                meta_title: jsonData[i].TestName,
+                                meta_desc: jsonData[i].TestName,
+                                meta_keyword: jsonData[i].TestName,
+                                search_tag: jsonData[i].TestName,
+                                test_pre_test_info: jsonData[i].TestName,
+                                specialityName: jsonData[i].TestName,
+                                test_components: jsonData[i].TestName,
+                                package_type: 'lab-test'
+                            };
+                            const existingTest = await testModel.findOne({ test_url: document.test_url });
+
+                            if (!existingTest) {
+                            await testModel.create(document);
+                            } else {
+                            await testModel.findOneAndUpdate(
+                                { test_url: document.test_url },
+                                document,
+                                { new: true }
+                            );
+                            }
+
+                        }
                     }
                     console.log('Test Update Prosess End....');
                 });
