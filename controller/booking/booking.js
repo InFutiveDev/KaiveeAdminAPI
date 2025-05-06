@@ -8,6 +8,7 @@ const testModel = require("../../models/test");
 const mongoose = require("mongoose");
 const _ = require("underscore");
 const { string } = require("joi");
+const technician = require("../../models/technician");
 const { ObjectId } = mongoose.Types;
 
 
@@ -97,7 +98,15 @@ const getAllBooking = async (req, res) => {
         },
       },
       {
-        $unwind: { path: "$addressData", preserveNullAndEmptyArrays: true },
+        $lookup: {
+          from: "technicians",
+          localField: "technicianId",
+          foreignField: "_id",
+          as: "technicianData",
+        },
+      },
+      {
+        $unwind: { path: "$technicianData", preserveNullAndEmptyArrays: true },
       },
       {
         $project: {
@@ -115,6 +124,7 @@ const getAllBooking = async (req, res) => {
           memberId:1,
           memberData: "$memberData",
           paymentAmount: 1,
+          technicianId:"$technicianData.technician_name",
           is_paid:1,
           id:1,
           createdAt:1,
@@ -221,6 +231,17 @@ const getBookingById = async (req, res) => {
         $unwind: { path: "$addressData", preserveNullAndEmptyArrays: true },
       },
       {
+        $lookup: {
+          from: "technicians",
+          localField: "technicianId",
+          foreignField: "_id",
+          as: "technicianData",
+        },
+      },
+      {
+        $unwind: { path: "$technicianData", preserveNullAndEmptyArrays: true },
+      },
+      {
         $project: {
           userId: 1,
           userData: "$userData",
@@ -232,6 +253,7 @@ const getBookingById = async (req, res) => {
           testData: "$testData",
           memberId:1,
           memberData: "$memberData",
+          technicianId:"$technicianData.technician_name",
           paymentAmount: 1,
           collectionType:1,
           id:1,

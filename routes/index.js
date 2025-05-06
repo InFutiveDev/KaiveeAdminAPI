@@ -37,6 +37,7 @@ const feedbackRoute = require("./newfeed");
 const corporateRoute = require("./corporate");
 const franchiseRoute = require("./franchise");
 const carrer_formRoute = require("./carrerForm");
+const technicianRoute = require("./technician");
 
 
 
@@ -79,6 +80,7 @@ router.use("/feeds",auth,feedbackRoute);
 router.use("/corporate",auth,corporateRoute);
 router.use("/franchise",auth,franchiseRoute);
 router.use("/carrer-form",auth,carrer_formRoute);
+router.use("/technician",auth,technicianRoute);
 
 
 
