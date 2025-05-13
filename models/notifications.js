@@ -3,11 +3,11 @@ const Schema = mongoose.Schema;
 
 const notificationSchema = new Schema(
   {
-    // userId: {
-    //   type: Schema.Types.ObjectId,
-    //   ref: "User",
-    //   required: true,
-    // },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
     notification_category: {
       type: String,
       default: null,
