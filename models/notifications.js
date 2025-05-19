@@ -1,33 +1,49 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+const mongoose = require('mongoose');
 
-const notificationSchema = new Schema(
-  {
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      default: null,
-    },
-    notification_category: {
-      type: String,
-      default: null,
-    },
-    notification_status: {
-      type: Boolean,
-      default: false,
-    },
-    notification_description: {
-      type: String,
-      default: null,
-    },
-    notification_news: {
-      type: String,
-      default: null,
-    },
+const NotificationSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   },
-  {
-    timestamps: true,
-  }
-);
+  title: {
+    type: String,
+    required: [true, 'Please add a title'],
+    trim: true,
+    maxlength: [100, 'Title cannot be more than 100 characters']
+  },
+  message: {
+    type: String,
+    required: [true, 'Please add a message'],
+    maxlength: [1000, 'Message cannot be more than 1000 characters']
+  },
+  category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'NotificationCategory',
+    required: true
+  },
+  isRead: {
+    type: Boolean,
+    default: false
+  },
+  isArchived: {
+    type: Boolean,
+    default: false
+  },
+  link: {
+    type: String,
+    default: null
+  },
+  metadata: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {}
+  },
+},
+ {
+    timestamps:true,
+});
 
-module.exports = mongoose.model("Notification", notificationSchema);
+// Create compound index for efficient queries
+NotificationSchema.index({ user: 1, isRead: 1, isArchived: 1, createdAt: -1 });
+
+module.exports = mongoose.model('Notification', NotificationSchema);

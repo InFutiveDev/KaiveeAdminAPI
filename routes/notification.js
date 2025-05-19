@@ -4,11 +4,15 @@ const notificationsController = require("../controller/notification/notification
 
 
 
-notificationsRoute.post("/add", notificationsController.addNotification);
-notificationsRoute.put("/update/:id", notificationsController.updateNotification);
+notificationsRoute.post("/create-notification", notificationsController.createNotification);
+notificationsRoute.post("/create-notification/bulk", notificationsController.sendBulkNotification);
+notificationsRoute.get("/get", notificationsController.getAllNotifications);
 notificationsRoute.delete("/delete/:id", notificationsController.deleteNotification);
-notificationsRoute.get("/getnotification", notificationsController.getEnabledNotifications);
-notificationsRoute.get("/getnotification/user/:userId", notificationsController.getNotificationsByUserId);
+
+notificationsRoute.post("/category", notificationsController.createCategory);
+notificationsRoute.get("/category", notificationsController.getCategories);
+notificationsRoute.put("/category/:id", notificationsController.updateCategory);
+notificationsRoute.delete("/category-delete/:id", notificationsController.deleteCategory);
 
 
 module.exports = notificationsRoute;
