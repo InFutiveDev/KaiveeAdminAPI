@@ -137,25 +137,90 @@ const getAllNotifications = async (req, res) => {
   try {
     const { category, user, isRead, page = 1, limit = 10 } = req.query;
 
-    const query = {};
-    if (category) query.category = ObjectId(category);
-    if (user) query.user = ObjectId(user);
-    if (isRead === "true" || isRead === "false") query.isRead = isRead === "true";
+    const matchStage = {};
+
+    if (isRead === "true" || isRead === "false") {
+      matchStage.isRead = isRead === "true";
+    }
 
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
-    const notifications = await Notification.find(query)
-      .populate("category", "name color icon")
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(parseInt(limit));
+    const pipeline = [
+      {
+        $lookup: {
+          from: "notificationcategories", // MongoDB collection name
+          localField: "category",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      { $unwind: "$category" },
 
-    const total = await Notification.countDocuments(query);
+      {
+        $lookup: {
+          from: "users", // MongoDB collection name
+          localField: "user",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
 
-    return Response.success({
-      res,
+      { $match: matchStage },
+    ];
+
+    // Filter by category name (if provided)
+    if (category) {
+      pipeline.push({
+        $match: {
+          "category.name": { $regex: category, $options: "i" },
+        },
+      });
+    }
+
+    // Filter by user name (if provided)
+    if (user) {
+      pipeline.push({
+        $match: {
+          "user.name": { $regex: user, $options: "i" },
+        },
+      });
+    }
+
+    // Count total documents
+    const countPipeline = [...pipeline, { $count: "total" }];
+    const totalCountResult = await Notification.aggregate(countPipeline);
+    const total = totalCountResult[0]?.total || 0;
+
+    // Pagination + Projection
+    pipeline.push(
+      { $sort: { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: parseInt(limit) },
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          message: 1,
+          isRead: 1,
+          createdAt: 1,
+          category: {
+            _id: "$category._id",
+            name: "$category.name",
+          },
+          user: {
+            _id: "$user._id",
+            name: "$user.name",
+          },
+        },
+      }
+    );
+
+    const notifications = await Notification.aggregate(pipeline);
+
+    return res.status(200).json({
+      success: true,
       msg: "Fetched successfully",
-      status: 200,
       data: {
         notifications,
         total,
@@ -165,10 +230,15 @@ const getAllNotifications = async (req, res) => {
       },
     });
   } catch (error) {
-    return handleException(logger, res, error);
+    console.error("Error in getAllNotifications:", error);
+    logger?.error?.("Error in getAllNotifications:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
   }
 };
-
 // ✅ CRUD for Category
 
 // Create Category
