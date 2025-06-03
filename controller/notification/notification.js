@@ -135,22 +135,34 @@ const deleteNotification = async (req, res) => {
 const getAllNotifications = async (req, res) => {
   const { logger } = req;
   try {
-    const { category, user, isRead } = req.query;
+    const { category, user, isRead, page = 1, limit = 10 } = req.query;
 
     const query = {};
     if (category) query.category = ObjectId(category);
     if (user) query.user = ObjectId(user);
     if (isRead === "true" || isRead === "false") query.isRead = isRead === "true";
 
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
     const notifications = await Notification.find(query)
       .populate("category", "name color icon")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    const total = await Notification.countDocuments(query);
 
     return Response.success({
       res,
       msg: "Fetched successfully",
       status: 200,
-      data: notifications,
+      data: {
+        notifications,
+        total,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        totalPages: Math.ceil(total / parseInt(limit)),
+      },
     });
   } catch (error) {
     return handleException(logger, res, error);
